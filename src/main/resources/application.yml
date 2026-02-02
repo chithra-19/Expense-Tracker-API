@@ -1,0 +1,43 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: expense-tracker
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/expense_tracker?serverTimezone=UTC
+    username: root
+    password: Chithra@2619
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+
+# ===============================
+# JWT CONFIG (used in Week 2)
+# ===============================
+jwt:
+  secret: expense-tracker-secret-key-change-this
+  expiration: 86400000   # 24 hours in milliseconds
+  header: Authorization
+  prefix: Bearer
+
+# ===============================
+# LOGGING (optional but clean)
+# ===============================
+logging:
+  level:
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG
