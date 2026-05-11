@@ -12,9 +12,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserService userService;
 
-    public CustomUserDetailsService(UserService userService) {
-        this.userService = userService;
-    }
+    
     
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

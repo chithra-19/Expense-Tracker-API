@@ -41,13 +41,18 @@ public class ExpenseController {
             Authentication authentication) {
 
         User user = getUser(authentication);
-        Category categoryEntity = categoryService.findByName(request.getCategory());
+        Category categoryEntity = categoryService.findByName(request.getCategory())
+                .orElseGet(() -> categoryService.createCategory(request.getCategory()));
+        if (categoryEntity == null) {
+            throw new RuntimeException("Category not found");
+        }
 
         Expense expense = ExpenseMapper.toEntity(request, categoryEntity);
         expense.setUser(user);
 
         Expense saved = expenseService.saveExpense(expense);
-        return ResponseEntity.ok(ExpenseMapper.toDto(saved));
+        return ResponseEntity.status(201)
+                .body(ExpenseMapper.toDto(saved));
     }
 
     // READ ALL
@@ -83,8 +88,8 @@ public class ExpenseController {
             Authentication authentication) {
 
         User user = getUser(authentication);
-        Category categoryEntity = categoryService.findByName(request.getCategory());
-
+        Category categoryEntity = categoryService.findByName(request.getCategory())
+                .orElseGet(() -> categoryService.createCategory(request.getCategory()));
         Expense updatedExpense = ExpenseMapper.toEntity(request, categoryEntity);
         Expense updated = expenseService.updateExpense(id, updatedExpense, user);
 

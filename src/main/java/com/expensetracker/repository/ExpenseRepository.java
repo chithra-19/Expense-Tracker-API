@@ -4,10 +4,11 @@ import com.expensetracker.entity.Expense;
 import com.expensetracker.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.util.Collection;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -16,7 +17,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     List<Expense> findByUser(User user);
 
-    Optional<Expense> findByIdAndUser(Long id, User user);
+    @Query("SELECT e FROM Expense e JOIN FETCH e.category WHERE e.id = :id AND e.user = :user")
+    Optional<Expense> findByIdAndUser(@Param("id") Long id, @Param("user") User user);
 
     // ===== SUMMARY QUERIES =====
 

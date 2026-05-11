@@ -9,25 +9,30 @@ import com.expensetracker.entity.Expense;
 public class ExpenseMapper {
 
     // Convert ExpenseRequestDTO → Expense entity
-    public static Expense toEntity(ExpenseRequestDTO dto, Category categoryEntity) {
-        Expense expense = new Expense();
-        expense.setAmount(dto.getAmount());
-        expense.setDate(dto.getDate());
-        expense.setDescription(dto.getDescription());
-        expense.setCategory(categoryEntity); // ✅ set Category entity
-        return expense;
-    }
+	public static Expense toEntity(ExpenseRequestDTO dto, Category categoryEntity) {
+	    Expense expense = new Expense();
 
-    // Convert Expense entity → ExpenseResponseDTO
-    public static ExpenseResponseDTO toDto(Expense expense) {
-        ExpenseResponseDTO dto = new ExpenseResponseDTO();
-        dto.setId(expense.getId());
-        dto.setAmount(expense.getAmount());
-        dto.setCategory(expense.getCategory() != null ? expense.getCategory().getName() : null);
-        dto.setDescription(expense.getDescription());
-        dto.setDate(expense.getDate());
-        return dto;
-    }
+	    expense.setTitle(dto.getTitle());
+	    expense.setAmount(dto.getAmount());
+	    expense.setDate(dto.getDate());
+	    expense.setDescription(dto.getDescription());
+	    expense.setCategory(categoryEntity);
+
+	    return expense;
+	}
+
+	public static ExpenseResponseDTO toDto(Expense expense) {
+	    ExpenseResponseDTO dto = new ExpenseResponseDTO();
+
+	    dto.setId(expense.getId());
+	    dto.setTitle(expense.getTitle());   // 🔥 ADD THIS
+	    dto.setAmount(expense.getAmount());
+	    dto.setCategory(expense.getCategory() != null ? expense.getCategory().getName() : null);
+	    dto.setDescription(expense.getDescription());
+	    dto.setDate(expense.getDate());
+
+	    return dto;
+	}
 
     // Convert ExpenseSummaryDTO → ExpenseResponseDTO (for summaries)
     public static ExpenseResponseDTO toDto(ExpenseSummaryDTO summary) {
