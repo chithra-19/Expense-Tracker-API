@@ -4,44 +4,35 @@ import com.expensetracker.dto.ExpenseSummaryDTO;
 import com.expensetracker.entity.Expense;
 import com.expensetracker.entity.User;
 import com.expensetracker.repository.ExpenseRepository;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
 
-    public ExpenseService(ExpenseRepository expenseRepository) { 
-        this.expenseRepository = expenseRepository;
-    }
-
-    // ===================== CRUD =====================
-
-    // CREATE
     public Expense saveExpense(Expense expense) {
         return expenseRepository.save(expense);
     }
 
-    // READ ALL (user-specific)
+    @Transactional(readOnly = true)
     public List<Expense> getExpensesByUser(User user) {
         return expenseRepository.findByUser(user);
     }
 
-    // READ ONE (secure)
+    @Transactional(readOnly = true)
     public Expense getExpenseByIdAndUser(Long id, User user) {
         return expenseRepository.findByIdAndUser(id, user)
                 .orElseThrow(() -> new RuntimeException("Expense not found"));
     }
 
-    // UPDATE
     public Expense updateExpense(Long id, Expense expense, User user) {
         Expense existing = getExpenseByIdAndUser(id, user);
 
@@ -53,40 +44,34 @@ public class ExpenseService {
         return expenseRepository.save(existing);
     }
 
-    // DELETE
     public void deleteExpense(Long id, User user) {
         Expense existing = getExpenseByIdAndUser(id, user);
         expenseRepository.delete(existing);
     }
 
-    // ===================== SUMMARY =====================
-
- // Total by category
     public List<ExpenseSummaryDTO> getCategorySummary(User user) {
         return expenseRepository.totalByCategory(user)
                 .stream()
                 .map(row -> new ExpenseSummaryDTO(
-                        (String) row[0],                        // category name
-                        BigDecimal.valueOf((Double) row[1])     // convert Double → BigDecimal
+                        (String) row[0],
+                        new BigDecimal(row[1].toString())
                 ))
                 .toList();
     }
 
-    // Total by month
     public List<ExpenseSummaryDTO> getMonthlySummary(User user) {
         return expenseRepository.totalByMonth(user)
                 .stream()
                 .map(row -> new ExpenseSummaryDTO(
-                        row[0].toString(),                       // month as string
-                        BigDecimal.valueOf((Double) row[1])     // convert Double → BigDecimal
+                        row[0].toString(),
+                        new BigDecimal(row[1].toString())
                 ))
                 .toList();
     }
 
-
-
-    // Total for date range
-    public Double getTotalByDateRange(User user, LocalDate start, LocalDate end) {
-        return expenseRepository.totalByDateRange(user, start, end);
+    public BigDecimal getTotalByDateRange(User user, LocalDate start, LocalDate end) {
+        return new BigDecimal(
+                expenseRepository.totalByDateRange(user, start, end).toString()
+        );
     }
 }
